@@ -1,4 +1,7 @@
-import { NavBarMain, HeroSection, ArticleSelection, Footer } from './components/Maincomponent'
+import { NavBarMain } from "./components/Navbar"
+import { HeroSection } from "./components/HeroSection"
+import { ArticleSelection } from "./components/ArticleSection"
+import { Footer } from "./components/Footer"
 function App() {
   return (
     <div className="flex flex-col bg-white min-h-screen">
