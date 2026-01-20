@@ -1,6 +1,10 @@
+import { Routes, Route } from "react-router-dom"
+import { Toaster } from "sonner"
 import { NavBarMain } from "./components/Navbar"
 import { Footer } from "./components/Footer"
 import { LandingPage } from "./pages/LandingPage"
+import { ViewPostPage } from "./pages/ViewPostPage"
+import { NotFoundPage } from "./pages/NotFoundPage"
 
 function App() {
   return (
@@ -9,10 +13,15 @@ function App() {
         <NavBarMain />
       </header>
       <main className="grow">
-        <LandingPage />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/post/:postId" element={<ViewPostPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
         <div className="h-20" />
       </main>
       <Footer />
+      <Toaster />
     </div>
   )
 }

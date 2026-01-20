@@ -1,8 +1,9 @@
 import { Clock } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export function BlogCard({ category, title, excerpt, date, author, image }) {
+export function BlogCard({ id, category, title, excerpt, date, author, image }) {
     return (
-        <div className="flex flex-col gap-4 group cursor-pointer">
+        <Link to={`/post/${id}`} className="flex flex-col gap-4 group cursor-pointer">
             <div className="aspect-16/10 bg-brown-200 rounded-2xl overflow-hidden shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1 border border-brown-200">
                 {image ? (
                     <img
@@ -38,6 +39,7 @@ export function BlogCard({ category, title, excerpt, date, author, image }) {
                     {author}
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
+
