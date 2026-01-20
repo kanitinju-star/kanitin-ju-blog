@@ -1,7 +1,7 @@
 import { NavBarMain } from "./components/Navbar"
-import { HeroSection } from "./components/HeroSection"
-import { ArticleSelection } from "./components/ArticleSection"
 import { Footer } from "./components/Footer"
+import { LandingPage } from "./pages/LandingPage"
+
 function App() {
   return (
     <div className="flex flex-col bg-white min-h-screen">
@@ -9,13 +9,13 @@ function App() {
         <NavBarMain />
       </header>
       <main className="grow">
-        <HeroSection />
-        <ArticleSelection />
+        <LandingPage />
         <div className="h-20" />
       </main>
       <Footer />
     </div>
   )
 }
+
 
 export default App
