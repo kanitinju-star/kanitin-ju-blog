@@ -19,7 +19,6 @@ export function HeroSection() {
                 {/* Image Placeholder */}
                 <div className="lg:col-span-4 relative aspect-3/4 max-w-sm mx-auto w-full group">
                     <div className="absolute inset-0 bg-brown-300 rounded-2xl overflow-hidden shadow-xl transition-all duration-500 group-hover:scale-[1.02] border border-brown-200 flex items-center justify-center">
-                        {/* If image exists, it will cover the placeholder */}
                         <img
                             src=""
                             alt="Hero Placeholder"
