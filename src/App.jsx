@@ -5,6 +5,8 @@ import { Footer } from "./components/Footer"
 import { LandingPage } from "./pages/LandingPage"
 import { ViewPostPage } from "./pages/ViewPostPage"
 import { NotFoundPage } from "./pages/NotFoundPage"
+import { LoginPage } from "./pages/LoginPage"
+import { RegisterPage } from "./pages/RegisterPage"
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/post/:postId" element={<ViewPostPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <div className="h-20" />

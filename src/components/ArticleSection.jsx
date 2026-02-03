@@ -39,7 +39,7 @@ export function ArticleSelection() {
             let url = `${API_URL}`;
             const params = new URLSearchParams();
             if (category !== "Highlight") {
-                params.append("category", category);
+                params.append("category", category); 
             }
             params.append("page", currentPage);
             params.append("limit", 6);
