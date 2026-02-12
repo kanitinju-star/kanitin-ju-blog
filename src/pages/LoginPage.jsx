@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export function LoginPage() {
@@ -27,31 +27,27 @@ export function LoginPage() {
         return Object.keys(newErrors).length === 0;
     };
 
+    const navigate = useNavigate();
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validate()) {
-            // Mock API call failure for demo purposes if email is "error@example.com" or just random?
-            // User requested specific error UI: "Your password is incorrect or this email doesn't exist" in a toast.
-
-            // Allow login if email is admin@example.com, else fail to show the error state requested in UI?
-            // Or just fail always for demo?
-            // Let's make it fail if password is "error" or something.
-            // Or better: Just simulate a delay then fail, unless specific credentials.
-
-            // For now, I'll simulate success if password is "password", and fail otherwise, to allow testing both.
-
             if (formData.password === "password") {
                 console.log("Logged in", formData);
+                // Simulate login
+                localStorage.setItem("authToken", "true");
+                window.dispatchEvent(new Event("storage")); // Notify other components
                 toast.success("Login successful!");
+                setTimeout(() => {
+                    navigate("/");
+                }, 800);
             } else {
                 toast.error("Your password is incorrect or this email doesn't exist", {
                     className: "bg-red-500 text-white border-none",
                     descriptionClassName: "text-white/90"
                 });
-                // Also set field errors? The image shows red borders too?
-                // Image 3 shows red borders AND the toast.
                 setErrors({
-                    email: " ",  // minimal space to trigger border
+                    email: " ",
                     password: " "
                 });
             }

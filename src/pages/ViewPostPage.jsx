@@ -3,9 +3,15 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { formatDate } from "@/lib/dateUtils";
-import { Copy, Facebook, Linkedin, Twitter, MessageCircle, Heart } from "lucide-react";
+import { Copy, Facebook, Linkedin, Twitter, MessageCircle, Heart, MoreHorizontal, Edit, EyeOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { LoginAlertDialog } from "@/components/LoginAlertDialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function ViewPostPage() {
     const { postId } = useParams();
@@ -13,6 +19,9 @@ export function ViewPostPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showLoginDialog, setShowLoginDialog] = useState(false);
+
+    // Mock Admin State - set to true to visualize the UI as requested
+    const isAdmin = true;
 
     // API URL
     const API_URL = `https://blog-post-project-api.vercel.app/posts/${postId}`;
@@ -171,7 +180,7 @@ export function ViewPostPage() {
 
                 {/* Sidebar (Author) - Swapped to right */}
                 <aside className="md:w-1/4 shrink-0 space-y-8 md:sticky md:top-24 md:h-fit">
-                    <div className="bg-brown-100/30 p-6 rounded-2xl border border-brown-200 space-y-4">
+                    <div className="bg-brown-100/30 p-6 rounded-2xl border border-brown-200 space-y-4 relative">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-full bg-brown-200 overflow-hidden ring-2 ring-white shadow-sm">
                                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author}`} alt={post.author} />
@@ -181,6 +190,39 @@ export function ViewPostPage() {
                                 <p className="text-body-1 font-bold text-brown-600">{post.author}</p>
                             </div>
                         </div>
+
+                        {isAdmin && (
+                            <div className="absolute top-4 right-4">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="p-2 hover:bg-brown-200 rounded-full transition-colors text-brown-500">
+                                            <MoreHorizontal size={20} />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-lg border-brown-200">
+                                        <DropdownMenuItem
+                                            className="gap-2 cursor-pointer text-brown-600 focus:bg-brown-50 p-3 rounded-lg"
+                                            onClick={() => toast.info("Edit article clicked")}
+                                        >
+                                            <Edit size={16} /> Edit article
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className="gap-2 cursor-pointer text-brown-600 focus:bg-brown-50 p-3 rounded-lg"
+                                            onClick={() => toast.info("Hide article clicked")}
+                                        >
+                                            <EyeOff size={16} /> Hide article
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className="gap-2 cursor-pointer text-red-500 focus:bg-red-50 focus:text-red-600 p-3 rounded-lg"
+                                            onClick={() => toast.error("Delete functionality not implemented")}
+                                        >
+                                            <Trash2 size={16} /> Delete article
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        )}
+
                         <p className="text-body-3 text-brown-500 leading-relaxed">
                             I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.
                         </p>

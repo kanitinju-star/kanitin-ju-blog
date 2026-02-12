@@ -1,58 +1,157 @@
-import { Bell, ChevronDown, Menu} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-const Logo = ({ className }) => (
-    <div className={cn("text-headline-3 font-bold tracking-tight text-brown-600", className)}>
-        LOGO<span className="text-brand-green">.</span>
-    </div>
-);
-export function NavBarMain() {
+import { useState, useEffect } from "react";
+import { Bell, Menu, X, User, LayoutDashboard, FileText, List, Lock, LogOut, Globe } from "lucide-react";
+import { Button } from "./ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+export function NavBarMain({ className }) {
+    const location = useLocation();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const [isLoggedIn, setIsLoggedIn] = useState(() => {
+        return localStorage.getItem("authToken") === "true";
+    });
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            setIsLoggedIn(localStorage.getItem("authToken") === "true");
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+        return () => window.removeEventListener("storage", handleStorageChange);
+    }, []);
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    const notifications = [
+        {
+            id: 1,
+            user: "Thompson P.",
+            action: "published a new article",
+            time: "2 hours ago",
+            avatar: "TP",
+            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Thompson"
+        },
+        {
+            id: 2,
+            user: "Jacob Lash",
+            action: "comment on the article you have commented on",
+            time: "4 hours ago",
+            avatar: "JL",
+            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob"
+        }
+    ];
+
+    const handleLogout = () => {
+        localStorage.removeItem("authToken");
+        window.dispatchEvent(new Event("storage"));
+        // Optional: navigate to home if not already there, but state change will update UI
+    };
+
     return (
-        <nav className="flex items-center justify-between px-6 py-4 bg-brown-100 border-b border-brown-200 lg:px-12">
-            <Logo />
+        <nav className={cn("w-full bg-white border-b border-brown-100", className)}>
+            <div className="max-w-7xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
+                {/* Logo */}
+                <Link to="/" className="text-2xl font-bold text-brown-600 tracking-tight">
+                    hh.
+                </Link>
 
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-4">
-                <button className="px-8 py-2.5 text-body-1 font-semibold text-brown-600 border border-brown-300 rounded-full hover:bg-brown-200 transition-colors cursor-pointer">
-                    Log in
-                </button>
-                <button className="px-8 py-2.5 text-body-1 font-semibold text-white bg-brown-600 rounded-full hover:bg-brown-500 transition-colors cursor-pointer">
-                    Sign up
-                </button>
-            </div>
+                {/* Desktop Nav */}
 
-            {/* Mobile Menu Icon */}
-            <div className="md:hidden text-brown-400 cursor-pointer">
-                <Menu size={24} />
-            </div>
-        </nav>
-    );
-}
 
-export function NavBarMember() {
-    return (
-        <nav className="flex items-center justify-between px-6 py-4 bg-brown-100 border-b border-brown-200 lg:px-12">
-            <Logo />
+                {/* Actions */}
+                <div className="hidden md:flex items-center gap-4">
+                    {isLoggedIn ? (
+                        <>
+                            {/* Notification Dropdown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="relative rounded-full hover:bg-brown-50 text-brown-400">
+                                        <Bell size={20} />
+                                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-80 p-0 rounded-2xl shadow-xl mt-2">
+                                    <div className="p-4 flex flex-col gap-4">
+                                        {notifications.map((item) => (
+                                            <div key={item.id} className="flex gap-3 items-start p-2 hover:bg-brown-50/50 rounded-xl cursor-pointer transition-colors">
+                                                <Avatar className="w-10 h-10 border border-white shadow-sm">
+                                                    <AvatarImage src={item.image} />
+                                                    <AvatarFallback>{item.avatar}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="space-y-1">
+                                                    <p className="text-body-2 text-brown-600 leading-snug">
+                                                        <span className="font-bold">{item.user}</span> {item.action}
+                                                    </p>
+                                                    <p className="text-xs text-brown-400">{item.time}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
 
-            <div className="flex items-center gap-4 md:gap-6">
-                <div className="p-2.5 bg-white rounded-full text-brown-400 shadow-sm cursor-pointer hover:bg-brown-200 transition-colors border border-brown-200">
-                    <Bell size={20} />
+                            <div className="h-6 w-px bg-brown-200 mx-2" />
+
+                            {/* User Profile Dropdown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <div className="flex items-center gap-3 cursor-pointer p-1 rounded-full hover:bg-brown-50 pr-3 transition-colors">
+                                        <Avatar className="w-9 h-9 border border-brown-200">
+                                            <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Moodeng" />
+                                            <AvatarFallback>MJ</AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-body-2 font-bold text-brown-600 hidden lg:block">Moodeng ja</span>
+                                    </div>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56 p-1 rounded-xl shadow-lg mt-2">
+                                    <DropdownMenuItem className="p-3 cursor-pointer rounded-lg hover:bg-brown-50 focus:bg-brown-50">
+                                        <Link to="/profile" className="w-full flex items-center gap-2">
+                                            <User size={16} /> Profile
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={handleLogout}
+                                        className="p-3 cursor-pointer rounded-lg hover:bg-brown-50 focus:bg-brown-50 text-red-500 hover:text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600"
+                                    >
+                                        Log out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login">
+                                <Button variant="outline" className="rounded-full px-6 border-brown-200 text-brown-600 hover:bg-brown-50">
+                                    Log in
+                                </Button>
+                            </Link>
+                            <Link to="/register">
+                                <Button className="rounded-full px-6 bg-black text-white hover:bg-gray-800 shadow-md hover:shadow-lg transition-all">
+                                    Sign up
+                                </Button>
+                            </Link>
+                        </>
+                    )}
                 </div>
 
-                <div className="flex items-center gap-2 cursor-pointer group">
-                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm ring-1 ring-brown-200">
-                        <img
-                            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Membername"
-                            alt="Profile"
-                            className="w-full h-auto"
-                        />
-                    </div>
-                    <div className="hidden sm:flex items-center gap-1 group-hover:text-brown-600 transition-colors">
-                        <span className="text-body-2 font-semibold text-brown-500">Membername</span>
-                        <span className="text-brown-400 group-hover:translate-y-0.5 transition-transform">
-                            <ChevronDown size={16} />
-                        </span>
-                    </div>
-                </div>
+                {/* Mobile Menu Toggle */}
+                <button
+                    onClick={toggleMenu}
+                    className="md:hidden p-2 text-brown-600 hover:bg-brown-50 rounded-full"
+                >
+                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
             </div>
         </nav>
     );
