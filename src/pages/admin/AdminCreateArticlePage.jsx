@@ -3,12 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea"; // Assuming you have this or use standard textarea
-import {
-    ChevronLeft,
-    Image as ImageIcon,
-    Upload
-} from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -27,98 +23,86 @@ export function AdminCreateArticlePage() {
 
     return (
         <AdminLayout>
-            <div className="max-w-5xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-8 pb-12">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link to="/admin/articles">
-                            <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-100">
-                                <ChevronLeft size={24} className="text-gray-600" />
-                            </Button>
-                        </Link>
-                        <h1 className="text-2xl font-bold text-gray-800">Create article</h1>
-                    </div>
+                    <h1 className="text-headline-3 text-brown-600">Create article</h1>
                     <div className="flex gap-3">
-                        <Button variant="outline" className="rounded-full border-gray-200 text-gray-600">
+                        <Button variant="outline" className="rounded-full border-brown-200 text-brown-400 bg-white hover:bg-brown-100 px-6 font-medium text-body-2">
                             Save as draft
                         </Button>
                         <Button
                             onClick={handlePublish}
                             disabled={loading}
-                            className="rounded-full bg-black text-white hover:bg-gray-800 min-w-[120px]"
+                            className="rounded-full bg-brown-600 text-white hover:bg-brown-500 px-6 font-medium text-body-2"
                         >
-                            {loading ? "Publishing..." : "Publish"}
+                            {loading ? "Publishing..." : "Save and publish"}
                         </Button>
                     </div>
                 </div>
 
-                {/* Form Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Main Editor */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-500 ml-1">Title</label>
-                                <Input
-                                    placeholder="Enter article title..."
-                                    className="text-lg font-medium border-gray-200 bg-gray-50/50 rounded-xl py-6"
-                                />
-                            </div>
+                {/* Form Content - Single Column */}
+                <div className="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-brown-100 space-y-8">
 
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-500 ml-1">Introduction (max 100 chars)</label>
-                                <Textarea
-                                    placeholder="Brief introduction..."
-                                    className="min-h-[100px] border-gray-200 bg-gray-50/50 rounded-xl resize-none"
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-500 ml-1">Content</label>
-                                <Textarea
-                                    placeholder="Write your article content here..."
-                                    className="min-h-[400px] border-gray-200 bg-gray-50/50 rounded-xl resize-none font-mono text-sm leading-relaxed"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Sidebar Settings */}
-                    <div className="space-y-6">
-                        {/* Thumbnail */}
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                            <h3 className="font-bold text-gray-700">Thumbnail image</h3>
-                            <div className="aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 gap-2 cursor-pointer hover:bg-gray-100 transition-colors">
-                                <ImageIcon size={32} />
-                                <span className="text-xs font-medium">Upload thumbnail image</span>
-                            </div>
-                            <Button variant="outline" className="w-full rounded-xl border-gray-200 text-gray-600">
-                                <Upload size={16} className="mr-2" />
-                                Choose file
+                    {/* Thumbnail */}
+                    <div className="space-y-3">
+                        <label className="text-body-2 font-medium text-brown-400">Thumbnail image</label>
+                        <div className="w-full aspect-[2/1] md:aspect-[3/1] bg-brown-100/50 rounded-3xl flex flex-col items-center justify-center border-2 border-dashed border-brown-200 gap-4">
+                            <ImageIcon className="w-12 h-12 text-brown-300" />
+                            <Button variant="outline" className="rounded-full border-brown-200 text-brown-500 bg-white hover:bg-brown-100 font-medium text-body-2">
+                                Upload thumbnail image
                             </Button>
                         </div>
-
-                        {/* Category */}
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                            <h3 className="font-bold text-gray-700">Category</h3>
-                            <select className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 outline-none focus:ring-2 focus:ring-gray-200">
-                                <option value="">Select category</option>
-                                <option value="Highlight">Highlight</option>
-                                <option value="Cat">Cat</option>
-                                <option value="Inspiration">Inspiration</option>
-                                <option value="General">General</option>
-                            </select>
-                        </div>
-
-                        {/* Author */}
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                            <h3 className="font-bold text-gray-700">Author name</h3>
-                            <Input
-                                placeholder="Enter author name"
-                                className="bg-gray-50 border-gray-200 rounded-xl"
-                            />
-                        </div>
                     </div>
+
+                    {/* Category */}
+                    <div className="space-y-2">
+                        <label className="text-body-2 font-medium text-brown-400 ml-1">Category</label>
+                        <select className="w-full p-3 bg-brown-100/50 border-none rounded-xl text-brown-600 outline-none focus:ring-1 focus:ring-brown-200 text-body-1">
+                            <option value="">Select category</option>
+                            <option value="Highlight">Highlight</option>
+                            <option value="Cat">Cat</option>
+                            <option value="Inspiration">Inspiration</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+
+                    {/* Author */}
+                    <div className="space-y-2">
+                        <label className="text-body-2 font-medium text-brown-400 ml-1">Author name</label>
+                        <Input
+                            placeholder="Thompson P."
+                            className="bg-brown-100/50 border-none rounded-xl p-6 shadow-none focus-visible:ring-1 focus-visible:ring-brown-200 text-brown-600 placeholder:text-brown-300 text-body-1"
+                        />
+                    </div>
+
+                    {/* Title */}
+                    <div className="space-y-2">
+                        <label className="text-body-2 font-medium text-brown-400 ml-1">Title</label>
+                        <Input
+                            placeholder="Article title"
+                            className="bg-brown-100/50 border-none rounded-xl p-6 shadow-none focus-visible:ring-1 focus-visible:ring-brown-200 text-brown-600 placeholder:text-brown-300 text-body-1"
+                        />
+                    </div>
+
+                    {/* Introduction */}
+                    <div className="space-y-2">
+                        <label className="text-body-2 font-medium text-brown-400 ml-1">Introduction (max 120 letters)</label>
+                        <Textarea
+                            placeholder="Introduction"
+                            className="min-h-[120px] bg-brown-100/50 border-none rounded-xl p-4 shadow-none resize-none focus-visible:ring-1 focus-visible:ring-brown-200 text-brown-600 placeholder:text-brown-300 text-body-1"
+                        />
+                    </div>
+
+                    {/* Content */}
+                    <div className="space-y-2">
+                        <label className="text-body-2 font-medium text-brown-400 ml-1">Content</label>
+                        <Textarea
+                            placeholder="Content"
+                            className="min-h-[400px] bg-brown-100/50 border-none rounded-xl p-4 shadow-none resize-none focus-visible:ring-1 focus-visible:ring-brown-200 font-mono text-sm leading-relaxed text-brown-600 placeholder:text-brown-300"
+                        />
+                    </div>
+
                 </div>
             </div>
         </AdminLayout>

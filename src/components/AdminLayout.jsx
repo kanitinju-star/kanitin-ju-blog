@@ -7,7 +7,7 @@ import {
     Bell,
     Lock,
     LogOut,
-    Globe
+    ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -33,7 +33,7 @@ export function AdminLayout({ children }) {
     return (
         <div className="min-h-screen bg-[#F8F9FA] flex font-sans">
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-10">
+            <aside className="w-64 bg-white border-r border-gray-200 flex flex-col min-h-screen shrink-0">
                 <div className="p-6">
                     <Link to="/admin/articles" className="text-2xl font-bold text-brown-600 tracking-tight block mb-1">
                         hh.
@@ -67,14 +67,15 @@ export function AdminLayout({ children }) {
                 <div className="p-4 border-t border-gray-100 space-y-1">
                     <Link
                         to="/"
+                        target="_blank"
                         className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl transition-all"
                     >
-                        <Globe size={18} />
-                        Go to website
+                        <ExternalLink size={18} />
+                        hh. website
                     </Link>
                     <button
                         onClick={handleLogout}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl transition-all"
                     >
                         <LogOut size={18} />
                         Log out
@@ -83,7 +84,7 @@ export function AdminLayout({ children }) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 ml-64 p-8">
+            <main className="flex-1 p-8">
                 {children}
             </main>
         </div>
