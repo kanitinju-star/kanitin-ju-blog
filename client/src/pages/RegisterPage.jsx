@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
+import client from "@/lib/axios";
 
 export function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -36,12 +37,22 @@ export function RegisterPage() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+
+
+    // ... inside component ...
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
-            // Mock API call
-            console.log("Registering", formData);
-            setIsSuccess(true);
+            try {
+                await client.post("/auth/register", formData);
+                setIsSuccess(true);
+            } catch (error) {
+                console.error("Registration error:", error);
+                const message = error.response?.data?.error || "Registration failed";
+                // basic alert or simple error setting
+                toast.error(message); // Assuming toast is imported or use setErrors
+                setErrors(prev => ({ ...prev, api: message }));
+            }
         }
     };
 
