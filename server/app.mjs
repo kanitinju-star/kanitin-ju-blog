@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import express from 'express';
 import cors from 'cors';
 import postRouter from './routers/posts.mjs';
+import authRouter from './routes/auth.mjs';
+import protectUser from './middlewares/protectUser.mjs';
+import protectAdmin from './middlewares/protectAdmin.mjs';
 
 const app = express();
 
@@ -27,6 +27,20 @@ app.get('/profile', (req, res) => {
 });
 
 app.use('/posts', postRouter);
+app.use('/auth', authRouter);
+app.get("/protected-route", protectUser, (req, res) => {
+    res.json({
+        message: "This is protected content",
+        user: req.user
+    });
+});
+
+app.get("/admin-only", protectAdmin, (req, res) => {
+    res.json({
+        message: "This is admin-only content",
+        user: req.user
+    });
+});
 
 app.get("/health", (req, res) => {
     res.status(200).json({ message: "OK" });

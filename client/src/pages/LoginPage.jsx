@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import client from "@/lib/axios";
 
 export function LoginPage() {
     const [formData, setFormData] = useState({
@@ -29,28 +30,34 @@ export function LoginPage() {
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+
+
+    // ... inside component ...
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (validate()) {
-            if (formData.password === "password") {
-                console.log("Logged in", formData);
-                // Simulate login
-                localStorage.setItem("authToken", "true");
-                window.dispatchEvent(new Event("storage")); // Notify other components
-                toast.success("Login successful!");
-                setTimeout(() => {
-                    navigate("/");
-                }, 800);
-            } else {
-                toast.error("Your password is incorrect or this email doesn't exist", {
-                    className: "bg-red-500 text-white border-none",
-                    descriptionClassName: "text-white/90"
-                });
-                setErrors({
-                    email: " ",
-                    password: " "
-                });
-            }
+        try {
+            const response = await client.post("/auth/login", formData);
+
+            localStorage.setItem("token", response.data.access_token);
+            // Also keep authToken for legacy support if needed, or remove it
+            localStorage.setItem("authToken", "true");
+
+            window.dispatchEvent(new Event("storage"));
+            toast.success("Login successful!");
+            setTimeout(() => {
+                navigate("/");
+            }, 800);
+        } catch (error) {
+            console.error("Login error:", error);
+            const message = error.response?.data?.error || "Login failed";
+            toast.error(message, {
+                className: "bg-red-500 text-white border-none",
+                descriptionClassName: "text-white/90"
+            });
+            setErrors({
+                email: " ",
+                password: " "
+            });
         }
     };
 

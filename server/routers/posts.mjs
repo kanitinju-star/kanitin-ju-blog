@@ -1,35 +1,60 @@
 import { Router } from "express";
 import pool from "../utils/db.mjs";
+import multer from "multer";
+import { createClient } from "@supabase/supabase-js";
+import protectAdmin from "../middlewares/protectAdmin.mjs";
 
 const postRouter = Router();
 
-postRouter.post("/", async (req, res) => {
+// Supabase Init
+const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY
+);
+
+// Multer Init
+const multerUpload = multer({ storage: multer.memoryStorage() });
+const imageFileUpload = multerUpload.fields([
+    { name: "imageFile", maxCount: 1 },
+]);
+
+// POST /posts (Create Post)
+postRouter.post("/", [imageFileUpload, protectAdmin], async (req, res) => {
     try {
-        const { title, image, category_id, description, content, status_id } = req.body;
+        const { title, category_id, description, content, status_id } = req.body;
+        const file = req.files?.imageFile?.[0];
 
         // Validation Rules
         if (!title) return res.status(400).json({ message: "Title is required" });
-        if (typeof title !== "string") return res.status(400).json({ message: "Title must be a string" });
-
-        if (!image) return res.status(400).json({ message: "Image is required" });
-        if (typeof image !== "string") return res.status(400).json({ message: "Image must be a string" });
-
         if (!category_id) return res.status(400).json({ message: "Category id is required" });
-        if (typeof category_id !== "number") return res.status(400).json({ message: "Category id must be a number" });
-
         if (!description) return res.status(400).json({ message: "Description is required" });
-        if (typeof description !== "string") return res.status(400).json({ message: "Description must be a string" });
-
         if (!content) return res.status(400).json({ message: "Content is required" });
-        if (typeof content !== "string") return res.status(400).json({ message: "Content must be a string" });
-
         if (!status_id) return res.status(400).json({ message: "Status id is required" });
-        if (typeof status_id !== "number") return res.status(400).json({ message: "Status id must be a number" });
 
+        // Image Validation
+        if (!file) return res.status(400).json({ message: "Image file is required" });
+
+        // Upload to Supabase
+        const bucketName = "my-personal-blog";
+        const filePath = `posts/${Date.now()}_${file.originalname}`;
+
+        const { data, error } = await supabase.storage
+            .from(bucketName)
+            .upload(filePath, file.buffer, {
+                contentType: file.mimetype,
+                upsert: false,
+            });
+
+        if (error) throw error;
+
+        // Get Public URL
+        const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(data.path);
+
+        // Insert into DB
         await pool.query(
             `INSERT INTO posts (title, image, category_id, description, content, status_id, date, likes_count)
              VALUES ($1, $2, $3, $4, $5, $6, NOW(), 0)`,
-            [title, image, category_id, description, content, status_id]
+            [title, publicUrl, parseInt(category_id), description, content, parseInt(status_id)]
         );
 
         return res.status(201).json({
@@ -38,7 +63,8 @@ postRouter.post("/", async (req, res) => {
     } catch (error) {
         console.error("Error creating post:", error);
         return res.status(500).json({
-            message: "Server could not create post because database connection"
+            message: "Server could not create post",
+            error: error.message
         });
     }
 });

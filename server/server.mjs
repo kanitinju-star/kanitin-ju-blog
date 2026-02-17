@@ -1,3 +1,4 @@
+import 'dotenv/config'; // Loads .env file immediately
 import app from "./app.mjs";
 
 const port = process.env.PORT || 4000;
