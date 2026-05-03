@@ -1,0 +1,24 @@
+{
+    "name": "kanitin-ju-blog-server",
+    "type": "module",
+    "version": "1.0.0",
+    "main": "app.mjs",
+    "scripts": {
+        "start": "node server.mjs",
+        "dev": "nodemon server.mjs"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@supabase/supabase-js": "^2.95.3",
+        "cors": "^2.8.5",
+        "dotenv": "^17.3.1",
+        "express": "^4.18.2",
+        "multer": "^2.0.2",
+        "pg": "^8.18.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.1"
+    }
+}
