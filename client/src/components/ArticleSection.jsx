@@ -44,19 +44,21 @@ export function ArticleSelection() {
             params.append("limit", 6);
 
             const response = await client.get("/posts", { params });
-            const newPosts = response.data.posts;
+            const newPosts = response.data.posts || [];
 
             if (isNewCategory || currentPage === 1) {
                 setPosts(newPosts);
             } else {
                 setPosts(prev => {
-                    const existingIds = new Set(prev.map(p => p.id));
-                    const uniqueNewPosts = newPosts.filter(p => !existingIds.has(p.id));
-                    return [...prev, ...uniqueNewPosts];
+                    const currentPosts = prev || [];
+                    const existingIds = new Set(currentPosts.map(p => p?.id).filter(Boolean));
+                    const uniqueNewPosts = newPosts.filter(p => p && !existingIds.has(p.id));
+                    return [...currentPosts, ...uniqueNewPosts];
                 });
             }
 
-            const { currentPage: apiPage, totalPages } = response.data;
+            const apiPage = response.data.currentPage || 1;
+            const totalPages = response.data.totalPages || 1;
             setHasMore(apiPage < totalPages);
 
         } catch (err) {

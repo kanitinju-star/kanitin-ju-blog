@@ -18,7 +18,7 @@ export function NotificationPage() {
             const response = await client.get("/notifications", {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setNotifications(response.data);
+            setNotifications(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error("Error fetching notifications:", error);
         } finally {
