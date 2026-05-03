@@ -27,7 +27,7 @@ export function NavBarMain({ className }) {
             if (token) {
                 try {
                     const response = await client.get("/auth/get-user");
-                    setUser(response.data.user);
+                    setUser(response.data);
                 } catch (error) {
                     console.error("Failed to fetch user:", error);
                     localStorage.removeItem("token");
@@ -135,7 +135,7 @@ export function NavBarMain({ className }) {
                                 <DropdownMenuTrigger asChild>
                                     <div className="flex items-center gap-3 cursor-pointer p-1 rounded-full hover:bg-brown-50 pr-3 transition-colors">
                                         <Avatar className="w-9 h-9 border border-brown-200">
-                                            <AvatarImage src={user?.profile_picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'User'}`} />
+                                            <AvatarImage src={user?.profilePic || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'User'}`} />
                                             <AvatarFallback>{user?.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
                                         </Avatar>
                                         <span className="text-body-2 font-bold text-brown-600 hidden lg:block">{user?.name || user?.username || "User"}</span>

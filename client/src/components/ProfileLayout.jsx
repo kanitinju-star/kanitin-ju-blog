@@ -13,10 +13,7 @@ export function ProfileLayout({ children }) {
     ];
 
     return (
-        <div className="min-h-screen bg-white flex flex-col">
-            <NavBarMain />
-
-            <main className="flex-grow bg-[#Fdfdfd]">
+        <main className="flex-grow bg-[#Fdfdfd]">
                 <div className="max-w-6xl mx-auto py-12 px-6 lg:px-12">
                     <div className="flex flex-col md:flex-row gap-8">
                         {/* Sidebar */}
@@ -47,7 +44,6 @@ export function ProfileLayout({ children }) {
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
+        </main>
     );
 }

@@ -36,7 +36,6 @@ export function ArticleSelection() {
         setLoading(true);
         setError(null);
         try {
-            let url = `${API_URL}`;
             const params = new URLSearchParams();
             if (category !== "Highlight") {
                 params.append("category", category); 
