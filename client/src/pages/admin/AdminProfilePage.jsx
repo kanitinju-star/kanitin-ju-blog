@@ -26,9 +26,7 @@ export function AdminProfilePage() {
                 const token = localStorage.getItem("token");
                 if (!token) return;
 
-                const response = await client.get("/auth/get-user", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await client.get("/auth/get-user");
                 
                 setFormData({
                     name: response.data.name || "",
@@ -62,12 +60,7 @@ export function AdminProfilePage() {
                 data.append("profilePic", selectedFile);
             }
 
-            const response = await client.put("/auth/profile", data, {
-                headers: { 
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data"
-                }
-            });
+            const response = await client.put("/auth/profile", data);
 
             if (response.data.profilePic) {
                 setFormData(prev => ({ ...prev, profilePic: response.data.profilePic }));

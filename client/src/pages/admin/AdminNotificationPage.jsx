@@ -14,9 +14,7 @@ export function AdminNotificationPage() {
     const fetchNotifications = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await client.get("/notifications", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await client.get("/notifications");
             setNotifications(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error("Error fetching notifications:", error);
@@ -31,10 +29,7 @@ export function AdminNotificationPage() {
 
     const handleMarkAsRead = async (id, postId) => {
         try {
-            const token = localStorage.getItem("token");
-            await client.put(`/notifications/${id}/read`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await client.put(`/notifications/${id}/read`);
             
             // Optimistic update
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
