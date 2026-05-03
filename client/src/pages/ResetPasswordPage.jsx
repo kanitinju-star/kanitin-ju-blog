@@ -13,6 +13,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import client from "@/lib/axios";
 
 export function ResetPasswordPage() {
     const [passwords, setPasswords] = useState({
@@ -21,9 +22,13 @@ export function ResetPasswordPage() {
         confirm: ""
     });
     const [showConfirm, setShowConfirm] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = () => {
-        // Validation could go here
+        if (!passwords.current || !passwords.new || !passwords.confirm) {
+            toast.error("Please fill in all fields");
+            return;
+        }
         if (passwords.new !== passwords.confirm) {
             toast.error("Passwords do not match");
             return;
@@ -31,23 +36,35 @@ export function ResetPasswordPage() {
         setShowConfirm(true);
     };
 
-    const handleConfirmReset = () => {
-        // Simulate API call
+    const handleConfirmReset = async () => {
+        setLoading(true);
         setShowConfirm(false);
-        setPasswords({ current: "", new: "", confirm: "" });
-        toast.success("Reset password", {
-            description: "Your password has been successfully updated",
-            className: "bg-white text-black border border-gray-200",
-        });
+        try {
+            const token = localStorage.getItem("token");
+            await client.put("/auth/reset-password", {
+                oldPassword: passwords.current,
+                newPassword: passwords.new
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            setPasswords({ current: "", new: "", confirm: "" });
+            toast.success("Reset password", {
+                description: "Your password has been successfully updated",
+                className: "bg-white text-black border border-gray-200",
+            });
+        } catch (error) {
+            console.error("Error resetting password:", error);
+            toast.error(error.response?.data?.error || "Failed to reset password");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <ProfileLayout>
             <div className="max-w-xl mx-auto">
                 <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 bg-brown-100 rounded-full flex items-center justify-center">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Moodeng" className="w-10 h-10 rounded-full" />
-                    </div>
                     <h2 className="text-display font-bold text-brown-600">Reset password</h2>
                 </div>
 
@@ -85,9 +102,10 @@ export function ResetPasswordPage() {
                     <div className="pt-4">
                         <Button
                             onClick={handleSubmit}
+                            disabled={loading}
                             className="rounded-full px-8 py-6 bg-black text-white hover:bg-gray-800 font-bold"
                         >
-                            Reset password
+                            {loading ? "Resetting..." : "Reset password"}
                         </Button>
                     </div>
                 </div>

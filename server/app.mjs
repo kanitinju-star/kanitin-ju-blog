@@ -1,9 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import postRouter from './routers/posts.mjs';
+import commentsRouter from './routers/comments.mjs';
+import likesRouter from './routers/likes.mjs';
+import categoriesRouter from './routers/categories.mjs';
+import statusesRouter from './routers/statuses.mjs';
 import authRouter from './routes/auth.mjs';
 import protectUser from './middlewares/protectUser.mjs';
 import protectAdmin from './middlewares/protectAdmin.mjs';
+import notificationsRouter from './routers/notifications.mjs';
 
 const app = express();
 
@@ -27,7 +32,12 @@ app.get('/profile', (req, res) => {
 });
 
 app.use('/posts', postRouter);
+app.use('/comments', commentsRouter);
+app.use('/likes', likesRouter);
+app.use('/categories', categoriesRouter);
+app.use('/statuses', statusesRouter);
 app.use('/auth', authRouter);
+app.use('/notifications', notificationsRouter);
 app.get("/protected-route", protectUser, (req, res) => {
     res.json({
         message: "This is protected content",

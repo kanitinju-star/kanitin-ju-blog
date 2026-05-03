@@ -10,7 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import axios from "axios";
+import client from "@/lib/axios";
 import { formatDate } from "@/lib/dateUtils";
 
 export function ArticleSelection() {
@@ -29,8 +29,8 @@ export function ArticleSelection() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
 
-    // API URL
-    const API_URL = "https://blog-post-project-api.vercel.app/posts";
+    // API URL - Using the client instead of hardcoded URL
+    // const API_URL = "https://blog-post-project-api.vercel.app/posts";
 
     const fetchPosts = async (currentPage, isNewCategory = false) => {
         setLoading(true);
@@ -44,7 +44,7 @@ export function ArticleSelection() {
             params.append("page", currentPage);
             params.append("limit", 6);
 
-            const response = await axios.get(url, { params });
+            const response = await client.get("/posts", { params });
             const newPosts = response.data.posts;
 
             if (isNewCategory || currentPage === 1) {
@@ -83,7 +83,7 @@ export function ArticleSelection() {
 
             setIsSearching(true);
             try {
-                const response = await axios.get(API_URL, {
+                const response = await client.get("/posts", {
                     params: {
                         keyword: searchQuery,
                         limit: 10

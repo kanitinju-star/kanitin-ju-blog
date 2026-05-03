@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { createClient } from "@supabase/supabase-js";
 import pool from "../utils/db.mjs";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
@@ -140,4 +143,63 @@ authRouter.put("/reset-password", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+authRouter.put("/profile", upload.single("profilePic"), async (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { name, username } = req.body;
+    const file = req.file;
+
+    if (!token) {
+        return res.status(401).json({ error: "Unauthorized: Token missing" });
+    }
+
+    try {
+        const { data: userData, error: authError } = await supabase.auth.getUser(token);
+        if (authError || !userData.user) {
+            return res.status(401).json({ error: "Unauthorized: Invalid token" });
+        }
+
+        const userId = userData.user.id;
+        let profilePicUrl = null;
+
+        if (file) {
+            const bucketName = "my-personal-blog";
+            const filePath = `profiles/${userId}_${Date.now()}_${file.originalname}`;
+
+            const { data, error: uploadError } = await supabase.storage
+                .from(bucketName)
+                .upload(filePath, file.buffer, {
+                    contentType: file.mimetype,
+                    upsert: true,
+                });
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(data.path);
+            profilePicUrl = publicUrl;
+        }
+
+        let query = "UPDATE users SET name = $1, username = $2";
+        let values = [name, username];
+
+        if (profilePicUrl) {
+            query += ", profile_pic = $3 WHERE id = $4";
+            values.push(profilePicUrl, userId);
+        } else {
+            query += " WHERE id = $3";
+            values.push(userId);
+        }
+
+        await pool.query(query, values);
+
+        res.status(200).json({ 
+            message: "Profile updated successfully", 
+            profilePic: profilePicUrl 
+        });
+    } catch (error) {
+        console.error("Profile Update Error:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 export default authRouter;

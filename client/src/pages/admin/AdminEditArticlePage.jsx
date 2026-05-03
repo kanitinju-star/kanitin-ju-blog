@@ -11,6 +11,7 @@ import {
     Trash2
 } from "lucide-react";
 import { toast } from "sonner";
+import client from "@/lib/axios";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -29,27 +30,67 @@ export function AdminEditArticlePage() {
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
-        title: "The Fascinating World of Cats: Why We Love Our Furry Friends",
-        introduction: "Cats have captivated human hearts for thousands of years. Whether lounging in a sunny spot or playfully chasing a string...",
-        content: `1. Independent Yet Affectionate\n\nOne of the most remarkable traits of cats is their balance between independence and affection...`,
-        category: "Cat",
-        author: "Thompson P.",
-        thumbnail: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=2643&auto=format&fit=crop"
+        title: "",
+        description: "",
+        content: "",
+        category_id: "",
+        author: "",
+        image: ""
     });
 
-    const handleUpdate = () => {
+    useEffect(() => {
+        const fetchArticle = async () => {
+            setLoading(true);
+            try {
+                const response = await client.get(`/posts/${id}`);
+                const post = response.data;
+                setFormData({
+                    title: post.title,
+                    description: post.description,
+                    content: post.content,
+                    category_id: post.category_id,
+                    author: post.author || "",
+                    image: post.image
+                });
+            } catch (error) {
+                console.error("Error fetching article:", error);
+                toast.error("Failed to load article");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchArticle();
+        }
+    }, [id]);
+
+    const handleUpdate = async () => {
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            await client.put(`/posts/${id}`, {
+                ...formData,
+                status_id: 2 // Assuming Published for update
+            });
             toast.success("Article updated successfully!");
             navigate("/admin/articles");
-        }, 1000);
+        } catch (error) {
+            console.error("Error updating article:", error);
+            toast.error(error.response?.data?.message || "Failed to update article");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleDelete = () => {
-        // Implement delete logic here
-        toast.success("Article deleted!");
-        navigate("/admin/articles");
+    const handleDelete = async () => {
+        try {
+            await client.delete(`/posts/${id}`);
+            toast.success("Article deleted!");
+            navigate("/admin/articles");
+        } catch (error) {
+            console.error("Error deleting article:", error);
+            toast.error("Failed to delete article");
+        }
     };
 
     return (
@@ -89,7 +130,7 @@ export function AdminEditArticlePage() {
                     <div className="space-y-3">
                         <label className="text-body-2 font-medium text-brown-400">Thumbnail image</label>
                         <div className="w-full aspect-[2/1] md:aspect-[3/1] bg-brown-100/50 rounded-3xl overflow-hidden relative group">
-                            <img src={formData.thumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
+                            <img src={formData.image} alt="Thumbnail" className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <Button variant="secondary" className="rounded-full text-body-2 font-medium">
                                     Change image
@@ -102,15 +143,15 @@ export function AdminEditArticlePage() {
                     <div className="space-y-2">
                         <label className="text-body-2 font-medium text-brown-400 ml-1">Category</label>
                         <select
-                            value={formData.category}
-                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                            value={formData.category_id}
+                            onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                             className="w-full p-3 bg-brown-100/50 border-none rounded-xl text-brown-600 outline-none focus:ring-1 focus:ring-brown-200 text-body-1"
                         >
                             <option value="">Select category</option>
-                            <option value="Highlight">Highlight</option>
-                            <option value="Cat">Cat</option>
-                            <option value="Inspiration">Inspiration</option>
-                            <option value="General">General</option>
+                            <option value="1">Highlight</option>
+                            <option value="2">Cat</option>
+                            <option value="3">Inspiration</option>
+                            <option value="4">General</option>
                         </select>
                     </div>
 
@@ -138,8 +179,8 @@ export function AdminEditArticlePage() {
                     <div className="space-y-2">
                         <label className="text-body-2 font-medium text-brown-400 ml-1">Introduction (max 120 letters)</label>
                         <Textarea
-                            value={formData.introduction}
-                            onChange={(e) => setFormData({ ...formData, introduction: e.target.value })}
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             className="min-h-[120px] bg-brown-100/50 border-none rounded-xl p-4 shadow-none resize-none focus-visible:ring-1 focus-visible:ring-brown-200 text-brown-600 text-body-1"
                         />
                     </div>

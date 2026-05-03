@@ -9,7 +9,7 @@ export function ProfileLayout({ children }) {
     const menuItems = [
         { href: "/profile", label: "Profile", icon: User },
         { href: "/reset-password", label: "Reset password", icon: Lock },
-        // { href: "/notification-settings", label: "Notification", icon: Bell }, // Placeholder for future
+        { href: "/notifications", label: "Notification", icon: Bell },
     ];
 
     return (
