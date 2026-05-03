@@ -40,12 +40,9 @@ export function ResetPasswordPage() {
         setLoading(true);
         setShowConfirm(false);
         try {
-            const token = localStorage.getItem("token");
             await client.put("/auth/reset-password", {
                 oldPassword: passwords.current,
                 newPassword: passwords.new
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
 
             setPasswords({ current: "", new: "", confirm: "" });

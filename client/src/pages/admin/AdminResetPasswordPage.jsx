@@ -36,12 +36,9 @@ export function AdminResetPasswordPage() {
 
         setLoading(true);
         try {
-            const token = localStorage.getItem("token");
             await client.put("/auth/reset-password", {
                 oldPassword: formData.currentPassword,
                 newPassword: formData.newPassword
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
 
             toast.success("Password reset successfully!");
