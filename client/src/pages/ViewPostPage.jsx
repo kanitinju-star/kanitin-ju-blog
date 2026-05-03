@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import client from "@/lib/axios";
 import ReactMarkdown from "react-markdown";
 import { formatDate } from "@/lib/dateUtils";
 import { Copy, Facebook, Linkedin, Twitter, MessageCircle, Heart, MoreHorizontal, Edit, EyeOff, Trash2 } from "lucide-react";
@@ -23,15 +23,15 @@ export function ViewPostPage() {
     // Mock Admin State - set to true to visualize the UI as requested
     const isAdmin = true;
 
-    // API URL
-    const API_URL = `https://blog-post-project-api.vercel.app/posts/${postId}`;
+    // API URL - Using the client instead of hardcoded URL
+    // const API_URL = `https://blog-post-project-api.vercel.app/posts/${postId}`;
 
     useEffect(() => {
         const fetchPost = async () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(API_URL);
+                const response = await client.get(`/posts/${postId}`);
                 setPost(response.data);
             } catch (err) {
                 console.error("Error fetching post:", err);

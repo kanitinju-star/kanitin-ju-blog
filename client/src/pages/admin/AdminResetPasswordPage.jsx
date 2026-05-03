@@ -3,6 +3,7 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import client from "@/lib/axios";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,8 +24,7 @@ export function AdminResetPasswordPage() {
         confirmPassword: ""
     });
 
-    const handleReset = () => {
-        // Mock validation
+    const handleReset = async () => {
         if (formData.newPassword !== formData.confirmPassword) {
             toast.error("New passwords do not match");
             return;
@@ -35,11 +35,23 @@ export function AdminResetPasswordPage() {
         }
 
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            const token = localStorage.getItem("token");
+            await client.put("/auth/reset-password", {
+                oldPassword: formData.currentPassword,
+                newPassword: formData.newPassword
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
             toast.success("Password reset successfully!");
             setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-        }, 1000);
+        } catch (error) {
+            console.error("Error resetting password:", error);
+            toast.error(error.response?.data?.error || "Failed to reset password");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -80,7 +92,6 @@ export function AdminResetPasswordPage() {
 
                 {/* Form Content */}
                 <div className="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-brown-100 space-y-8">
-
                     <div className="space-y-6">
                         {/* Current Password */}
                         <div className="space-y-2">
@@ -118,7 +129,6 @@ export function AdminResetPasswordPage() {
                             />
                         </div>
                     </div>
-
                 </div>
             </div>
         </AdminLayout>

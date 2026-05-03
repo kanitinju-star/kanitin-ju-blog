@@ -21,7 +21,7 @@ const imageFileUpload = multerUpload.fields([
 // POST /posts (Create Post)
 postRouter.post("/", [imageFileUpload, protectAdmin], async (req, res) => {
     try {
-        const { title, category_id, description, content, status_id } = req.body;
+        const { title, category_id, description, content, status_id, author } = req.body;
         const file = req.files?.imageFile?.[0];
 
         // Validation Rules
@@ -51,14 +51,33 @@ postRouter.post("/", [imageFileUpload, protectAdmin], async (req, res) => {
         const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(data.path);
 
         // Insert into DB
-        await pool.query(
-            `INSERT INTO posts (title, image, category_id, description, content, status_id, date, likes_count)
-             VALUES ($1, $2, $3, $4, $5, $6, NOW(), 0)`,
-            [title, publicUrl, parseInt(category_id), description, content, parseInt(status_id)]
+        const postResult = await pool.query(
+            `INSERT INTO posts (title, image, category_id, description, content, status_id, author, author_id, date, likes_count)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), 0) RETURNING id`,
+            [title, publicUrl, parseInt(category_id), description, content, parseInt(status_id), author, req.user.id]
         );
 
+        const postId = postResult.rows[0].id;
+
+        // If published (status_id = 2), notify all users
+        if (parseInt(status_id) === 2) {
+            try {
+                const usersResult = await pool.query("SELECT id FROM users WHERE role = 'user'");
+                for (const user of usersResult.rows) {
+                    await pool.query(
+                        "INSERT INTO notifications (user_id, actor_name, action_type, post_id, post_title) VALUES ($1, $2, $3, $4, $5)",
+                        [user.id, author, 'new_article', postId, title]
+                    );
+                }
+            } catch (notifyError) {
+                console.error("Error sending new article notifications:", notifyError);
+                // Don't fail the whole request if notifications fail
+            }
+        }
+
         return res.status(201).json({
-            message: "Created post successfully"
+            message: "Created post successfully",
+            id: postId
         });
     } catch (error) {
         console.error("Error creating post:", error);
@@ -154,7 +173,7 @@ postRouter.get("/:id", async (req, res) => {
 postRouter.put("/:id", async (req, res) => {
     try {
         const postId = req.params.id;
-        const { title, image, category_id, description, content, status_id } = req.body;
+        const { title, image, category_id, description, content, status_id, author } = req.body;
 
         // Validation Rules
         if (!title) return res.status(400).json({ message: "Title is required" });
@@ -177,9 +196,9 @@ postRouter.put("/:id", async (req, res) => {
 
         const result = await pool.query(
             `UPDATE posts
-             SET title = $1, image = $2, category_id = $3, description = $4, content = $5, status_id = $6
-             WHERE id = $7`,
-            [title, image, category_id, description, content, status_id, postId]
+             SET title = $1, image = $2, category_id = $3, description = $4, content = $5, status_id = $6, author = $7
+             WHERE id = $8`,
+            [title, image, category_id, description, content, status_id, author, postId]
         );
 
         if (result.rowCount === 0) {

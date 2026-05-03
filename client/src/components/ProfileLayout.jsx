@@ -9,14 +9,11 @@ export function ProfileLayout({ children }) {
     const menuItems = [
         { href: "/profile", label: "Profile", icon: User },
         { href: "/reset-password", label: "Reset password", icon: Lock },
-        // { href: "/notification-settings", label: "Notification", icon: Bell }, // Placeholder for future
+        { href: "/notifications", label: "Notification", icon: Bell },
     ];
 
     return (
-        <div className="min-h-screen bg-white flex flex-col">
-            <NavBarMain />
-
-            <main className="flex-grow bg-[#Fdfdfd]">
+        <main className="flex-grow bg-[#Fdfdfd]">
                 <div className="max-w-6xl mx-auto py-12 px-6 lg:px-12">
                     <div className="flex flex-col md:flex-row gap-8">
                         {/* Sidebar */}
@@ -47,7 +44,6 @@ export function ProfileLayout({ children }) {
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
+        </main>
     );
 }
